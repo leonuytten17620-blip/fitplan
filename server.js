@@ -1,0 +1,1 @@
+[file-gen: generate_document query="server.js fichier backend Node.js Express pour l'application FitPlan AI intégrant l'API OpenAI pour la génération de programmes sportifs"]

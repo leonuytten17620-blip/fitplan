@@ -1,1 +1,93 @@
-[file-gen: generate_document query="index.html pour l'application FitPlan AI avec formulaire interactif, design Tailwind CSS sombre et épuré pour générer des programmes d'entraînement et nutrition"]
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitPlan AI — Mon Programme Sur-Mesure</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="max-w-xl w-full bg-gray-800 p-8 rounded-xl shadow-2xl border border-gray-700">
+        <h1 class="text-3xl font-bold text-center text-emerald-400 mb-2">FitPlan AI</h1>
+        <p class="text-gray-400 text-center mb-6">Génère ton programme d'entraînement personnalisé en quelques secondes.</p>
+
+        <form id="planForm" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Sport / Discipline principale</label>
+                <input type="text" id="sport" placeholder="ex: Musculation, Course à pied, Triathlon..." class="w-full p-3 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:border-emerald-400" required>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Niveau</label>
+                    <select id="level" class="w-full p-3 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:border-emerald-400">
+                        <option value="Débutant">Débutant</option>
+                        <option value="Intermédiaire">Intermédiaire</option>
+                        <option value="Avancé">Avancé</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Séances par semaine</label>
+                    <select id="days" class="w-full p-3 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:border-emerald-400">
+                        <option value="3">3 jours</option>
+                        <option value="4">4 jours</option>
+                        <option value="5">5 jours</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-1">Objectif principal</label>
+                <input type="text" id="goal" placeholder="ex: Prise de masse, Perte de gras, Prépa marathon..." class="w-full p-3 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:border-emerald-400" required>
+            </div>
+
+            <button type="submit" id="submitBtn" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 font-bold rounded transition-all">
+                Générer mon programme
+            </button>
+        </form>
+
+        <div id="result" class="mt-6 hidden bg-gray-900 p-4 rounded border border-gray-700 text-sm whitespace-pre-line leading-relaxed"></div>
+    </div>
+
+    <script>
+        document.getElementById('planForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const resultDiv = document.getElementById('result');
+            
+            btn.innerText = "Génération en cours...";
+            btn.disabled = true;
+            resultDiv.classList.add('hidden');
+
+            const payload = {
+                sport: document.getElementById('sport').value,
+                level: document.getElementById('level').value,
+                days: document.getElementById('days').value,
+                goal: document.getElementById('goal').value
+            };
+
+            try {
+                const res = await fetch('/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.plan) {
+                    resultDiv.innerText = data.plan;
+                } else {
+                    resultDiv.innerText = "Erreur : " + (data.error || "Impossible de générer le programme.");
+                }
+                resultDiv.classList.remove('hidden');
+            } catch (err) {
+                resultDiv.innerText = "Erreur lors de la connexion au serveur.";
+                resultDiv.classList.remove('hidden');
+            }
+
+            btn.innerText = "Générer mon programme";
+            btn.disabled = false;
+        });
+    </script>
+</body>
+</html>

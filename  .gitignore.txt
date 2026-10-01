@@ -1,1 +1,0 @@
-[file-gen: generate_document query=".gitignore pour ignorer node_modules et .env"]
